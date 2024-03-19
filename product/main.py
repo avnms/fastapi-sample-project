@@ -64,3 +64,8 @@ def delete_product(id: int, db: Session = Depends(get_db)):
     )
     db.commit()
     return {"message": "Product deleted successfully."}
+
+
+@app.post("/seller")
+def create_seller(request: schemas.Seller):
+    return request

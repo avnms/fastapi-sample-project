@@ -10,3 +10,9 @@ class Product(BaseModel):
 class DisplayProduct(BaseModel):
     name: str
     description: str
+
+
+class Seller(BaseModel):
+    username: str
+    email: str
+    password: str
