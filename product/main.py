@@ -69,7 +69,7 @@ def delete_product(id: int, db: Session = Depends(get_db)):
     return {"message": "Product deleted successfully."}
 
 
-@app.post("/seller")
+@app.post("/seller", response_model=schemas.DisplaySeller)
 def create_seller(request: schemas.Seller, db: Session = Depends(get_db)):
     hashed_password = pwd_context.hash(request.password)
     new_seller = models.Seller(
