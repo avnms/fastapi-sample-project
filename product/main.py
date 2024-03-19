@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status
 from sqlalchemy.orm import Session
 from typing import List
 from . import schemas
@@ -30,7 +30,7 @@ def get_product(id: int, db: Session = Depends(get_db)):
     return product
 
 
-@app.post("/product")
+@app.post("/product", status_code=status.HTTP_201_CREATED)
 def add_product(request: schemas.Product, db: Session = Depends(get_db)):
     new_product = models.Product(
         name=request.name,
