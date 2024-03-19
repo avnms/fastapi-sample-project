@@ -40,3 +40,12 @@ def add_product(request: Product, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_product)
     return request
+
+
+@app.delete("/product/{id}")
+def delete_product(id: int, db: Session = Depends(get_db)):
+    db.query(models.Product).filter(models.Product.id == id).delete(
+        synchronize_session=False
+    )
+    db.commit()
+    return {"message": "Product deleted successfully."}
