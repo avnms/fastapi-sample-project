@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, status
+from fastapi import FastAPI, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from . import schemas
@@ -27,6 +27,10 @@ def get_products(db: Session = Depends(get_db)):
 @app.get("/product/{id}", response_model=schemas.DisplayProduct)
 def get_product(id: int, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id).first()
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Product not found."
+        )
     return product
 
 
