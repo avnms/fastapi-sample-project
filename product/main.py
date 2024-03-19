@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from passlib.context import CryptContext
 from . import schemas
 from . import models
 from .database import engine, SessionLocal
@@ -8,6 +9,8 @@ from .database import engine, SessionLocal
 app = FastAPI()
 
 models.Base.metadata.create_all(engine)
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_db():
@@ -68,10 +71,11 @@ def delete_product(id: int, db: Session = Depends(get_db)):
 
 @app.post("/seller")
 def create_seller(request: schemas.Seller, db: Session = Depends(get_db)):
+    hashed_password = pwd_context.hash(request.password)
     new_seller = models.Seller(
         username=request.username,
         email=request.email,
-        password=request.password,
+        password=hashed_password,
     )
     db.add(new_seller)
     db.commit()
