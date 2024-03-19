@@ -67,5 +67,13 @@ def delete_product(id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/seller")
-def create_seller(request: schemas.Seller):
-    return request
+def create_seller(request: schemas.Seller, db: Session = Depends(get_db)):
+    new_seller = models.Seller(
+        username=request.username,
+        email=request.email,
+        password=request.password,
+    )
+    db.add(new_seller)
+    db.commit()
+    db.refresh(new_seller)
+    return new_seller
