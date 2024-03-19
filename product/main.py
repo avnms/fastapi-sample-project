@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from .schemas import Product
+from typing import List
+from . import schemas
 from . import models
 from .database import engine, SessionLocal
 
@@ -17,20 +18,20 @@ def get_db():
         db.close()
 
 
-@app.get("/products")
+@app.get("/products", response_model=List[schemas.DisplayProduct])
 def get_products(db: Session = Depends(get_db)):
     products = db.query(models.Product).all()
     return products
 
 
-@app.get("/product/{id}")
+@app.get("/product/{id}", response_model=schemas.DisplayProduct)
 def get_product(id: int, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id).first()
     return product
 
 
 @app.post("/product")
-def add_product(request: Product, db: Session = Depends(get_db)):
+def add_product(request: schemas.Product, db: Session = Depends(get_db)):
     new_product = models.Product(
         name=request.name,
         description=request.description,
@@ -43,7 +44,7 @@ def add_product(request: Product, db: Session = Depends(get_db)):
 
 
 @app.put("/product/{id}")
-def update_product(request: Product, id: int, db: Session = Depends(get_db)):
+def update_product(request: schemas.Product, id: int, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id)
     if not product.first():
         pass
