@@ -17,6 +17,18 @@ def get_db():
         db.close()
 
 
+@app.get("/products")
+def get_products(db: Session = Depends(get_db)):
+    products = db.query(models.Product).all()
+    return products
+
+
+@app.get("/product/{id}")
+def get_product(id: int, db: Session = Depends(get_db)):
+    product = db.query(models.Product).filter(models.Product.id == id).first()
+    return product
+
+
 @app.post("/product")
 def add_product(request: Product, db: Session = Depends(get_db)):
     new_product = models.Product(
