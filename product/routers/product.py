@@ -6,16 +6,16 @@ from .. import models
 from .. import schemas
 
 
-router = APIRouter()
+router = APIRouter(tags=["Products"], prefix="/product")
 
 
-@router.get("/products", response_model=List[schemas.DisplayProduct], tags=["Products"])
+@router.get("/", response_model=List[schemas.DisplayProduct])
 def get_products(db: Session = Depends(get_db)):
     products = db.query(models.Product).all()
     return products
 
 
-@router.get("/product/{id}", response_model=schemas.DisplayProduct, tags=["Products"])
+@router.get("/{id}", response_model=schemas.DisplayProduct)
 def get_product(id: int, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id).first()
     if not product:
@@ -25,7 +25,7 @@ def get_product(id: int, db: Session = Depends(get_db)):
     return product
 
 
-@router.post("/product", status_code=status.HTTP_201_CREATED, tags=["Products"])
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def add_product(request: schemas.Product, db: Session = Depends(get_db)):
     new_product = models.Product(
         name=request.name,
@@ -39,7 +39,7 @@ def add_product(request: schemas.Product, db: Session = Depends(get_db)):
     return request
 
 
-@router.put("/product/{id}", tags=["Products"])
+@router.put("/{id}")
 def update_product(request: schemas.Product, id: int, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id)
     if not product.first():
@@ -49,7 +49,7 @@ def update_product(request: schemas.Product, id: int, db: Session = Depends(get_
     return {"message": "Product updated successfully"}
 
 
-@router.delete("/product/{id}", tags=["Products"])
+@router.delete("/{id}")
 def delete_product(id: int, db: Session = Depends(get_db)):
     db.query(models.Product).filter(models.Product.id == id).delete(
         synchronize_session=False
