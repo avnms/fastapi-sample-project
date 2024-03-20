@@ -1,12 +1,29 @@
+import os
 from fastapi import APIRouter, Depends, status, HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
+from jose import jwt, JWTError
 from ..database import get_db
 from .. import schemas, models
+
+load_dotenv()
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")
 
 router = APIRouter(tags=["Auth"])
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def generate_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.now(datetime.UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 
 @router.post("/login")
