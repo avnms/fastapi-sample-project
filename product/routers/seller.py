@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from ..database import get_db
-from .. import schemas
-from .. import models
+from .. import schemas, models
 
 router = APIRouter(tags=["Seller"], prefix="/seller")
 
