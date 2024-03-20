@@ -3,13 +3,17 @@ from sqlalchemy.orm import Session
 from typing import List
 from ..database import get_db
 from .. import schemas, models
+from .login import get_current_user
 
 
 router = APIRouter(tags=["Products"], prefix="/product")
 
 
 @router.get("/", response_model=List[schemas.DisplayProduct])
-def get_products(db: Session = Depends(get_db)):
+def get_products(
+    db: Session = Depends(get_db),
+    current_user: schemas.Seller = Depends(get_current_user),
+):
     products = db.query(models.Product).all()
     return products
 

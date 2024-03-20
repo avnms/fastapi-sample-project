@@ -1,6 +1,6 @@
 import os
 from fastapi import APIRouter, Depends, status, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
@@ -39,13 +39,15 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         username = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = schemas.TokenData(username)
+        token_data = schemas.TokenData(username=username)
     except JWTError:
         raise credentials_exception
 
 
 @router.post("/login")
-def login(request: schemas.Login, db: Session = Depends(get_db)):
+def login(
+    request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+):
     seller = (
         db.query(models.Seller)
         .filter(models.Seller.username == request.username)
